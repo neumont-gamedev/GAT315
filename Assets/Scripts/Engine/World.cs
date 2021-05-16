@@ -13,6 +13,8 @@ public class World : MonoBehaviour
     public FloatData gravitation;
     public FloatData fixedFPS;
     public StringData fpsText;
+    public StringData collisionText;
+    public BroadPhaseTypeData broadPhaseType;
     public VectorField vectorField;
 
     static World instance;
@@ -22,6 +24,8 @@ public class World : MonoBehaviour
     public List<Body> bodies { get; set; } = new List<Body>();
     public List<Spring> springs { get; set; } = new List<Spring>();
     public List<Force> forces { get; set; } = new List<Force>();
+        
+    public AABB AABB { get; set; }
 
     public Vector2 WorldSize { get => size * 2; }
     public AABB AABB { get => aabb; }
@@ -35,8 +39,8 @@ public class World : MonoBehaviour
     private void Awake()
 	{
         instance = this;
-        size = Camera.main.ViewportToWorldPoint(Vector2.one);
-        aabb = new AABB(Vector2.zero, size * 2);
+        Vector2 size = Camera.main.ViewportToWorldPoint(Vector2.one);
+        AABB = new AABB(Vector2.zero, size * 2);
     }
 
 	void Update()
@@ -46,6 +50,8 @@ public class World : MonoBehaviour
 
         springs.ForEach(spring => spring.Draw());
         if (!simulate) return;
+
+        broadPhase = broadPhases[(int)broadPhaseType.value];
 
         // forces
         GravitationalForce.ApplyForce(bodies, gravitation);
@@ -64,8 +70,13 @@ public class World : MonoBehaviour
                 bodies.ForEach(body => body.shape.color = Color.white);
                 broadPhase.Build(aabb, bodies);
 
-                Collision.CreateContacts(bodies, out List<Contact> contacts);
+                broadPhase.Build(AABB, bodies);
+                Collision.CreateBroadPhaseContacts(broadPhase, bodies, out List<Contact> contacts);
+                Collision.CreateNarrowPhaseContacts(ref contacts);
                 contacts.ForEach(contact => Collision.UpdateContactInfo(ref contact));
+
+                //Collision.CreateContacts(bodies, out List<Contact> contacts);
+                //contacts.ForEach(contact => Collision.UpdateContactInfo(ref contact));
                 ContactSolver.Resolve(contacts);
 
                 contacts.ForEach(contact => { contact.bodyA.shape.color = Color.red; contact.bodyB.shape.color = Color.red; });
@@ -78,7 +89,7 @@ public class World : MonoBehaviour
 
         if (wrap)
 		{
-            bodies.ForEach(body => body.position = Utilities.Wrap(body.position, -size, size));
+            bodies.ForEach(body => body.position = Utilities.Wrap(body.position, AABB));
         }
         bodies.ForEach(body => { body.force = Vector2.zero; body.acceleration = Vector2.zero; } );
     }

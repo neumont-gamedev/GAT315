@@ -14,6 +14,16 @@ public static class Utilities
         return point;
     }
 
+    public static Vector2 Wrap(Vector2 point, AABB aabb)
+    {
+        if (point.x > aabb.max.x) point.x = aabb.min.x;
+        if (point.x < aabb.min.x) point.x = aabb.max.x;
+        if (point.y > aabb.max.y) point.y = aabb.min.y;
+        if (point.y < aabb.min.y) point.y = aabb.max.y;
+
+        return point;
+    }
+
     public static Body GetBodyFromPosition(Vector2 position)
     {
         Body body = null;
