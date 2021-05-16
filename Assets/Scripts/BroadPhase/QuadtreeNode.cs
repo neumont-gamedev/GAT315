@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class QuadtreeNode
@@ -44,6 +45,21 @@ public class QuadtreeNode
 		}
 	}
 
+	public void Query(AABB aabb, List<Body> bodies)
+	{
+		if (!this.aabb.Contains(aabb)) return;
+
+		bodies.AddRange(this.bodies.Where(body => body.shape.aabb.Contains(aabb)));
+
+		if (subdivided)
+		{
+			northeast.Query(aabb, bodies);
+			northwest.Query(aabb, bodies);
+			southeast.Query(aabb, bodies);
+			southwest.Query(aabb, bodies);
+		}
+	}
+
 	private void Subdivide()
 	{
 		float xo = aabb.extents.x * 0.5f;
@@ -55,5 +71,15 @@ public class QuadtreeNode
 		southwest = new QuadtreeNode(new AABB(new Vector2(aabb.center.x + xo, aabb.center.y - yo), aabb.extents), capacity);
 
 		subdivided = true;
+	}
+
+	public void Draw()
+	{
+		aabb.Draw(Color.green);
+
+		northeast?.Draw();
+		northwest?.Draw();
+		southeast?.Draw();
+		southwest?.Draw();
 	}
 }

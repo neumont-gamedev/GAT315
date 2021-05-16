@@ -26,6 +26,7 @@ public class World : MonoBehaviour
     public Vector2 WorldSize { get => size * 2; }
     public AABB AABB { get => aabb; }
 
+    BroadPhase broadPhase = new Quadtree();
     AABB aabb;
     Vector2 size;
     float fixedDeltaTime { get { return 1.0f / fixedFPS; } }
@@ -61,6 +62,7 @@ public class World : MonoBehaviour
             if (collision)
 			{
                 bodies.ForEach(body => body.shape.color = Color.white);
+                broadPhase.Build(aabb, bodies);
 
                 Collision.CreateContacts(bodies, out List<Contact> contacts);
                 contacts.ForEach(contact => Collision.UpdateContactInfo(ref contact));
@@ -71,6 +73,8 @@ public class World : MonoBehaviour
 
             timeAccumulator = timeAccumulator - fixedDeltaTime;
 		}
+
+        broadPhase.Draw();
 
         if (wrap)
 		{
