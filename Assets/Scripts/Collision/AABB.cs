@@ -30,6 +30,22 @@ public struct AABB
 				aabb.max.y >= min.y && aabb.min.y <= max.y;
 	}
 
+	public void Expand(Vector2 point)
+	{
+		SetMinMax(Vector2.Min(min, point), Vector2.Max(max, point));
+	}
+
+	public void Expand(AABB aabb)
+	{
+		SetMinMax(Vector2.Min(min, aabb.min), Vector2.Max(max, aabb.max));
+	}
+
+	public void SetMinMax(Vector2 min, Vector2 max)
+	{
+		size = (max - min);
+		center = min + extents;
+	}
+
 	public void Draw(Color color, float width = 0.05f)
 	{
 		Lines.Instance.AddLine(new Vector2(min.x, min.y), new Vector2(max.x, min.y), color, width);

@@ -9,10 +9,12 @@ public class World : MonoBehaviour
     public BoolData simulate;
     public BoolData collision;
     public BoolData wrap;
+    public BoolData collisionDebug;
     public FloatData gravity;
     public FloatData gravitation;
     public FloatData fixedFPS;
     public StringData fpsText;
+    public StringData collisionText;
     public BroadPhaseTypeData broadPhaseType;
     public VectorField vectorField;
 
@@ -27,7 +29,9 @@ public class World : MonoBehaviour
     public Vector2 WorldSize { get => size * 2; }
     public AABB AABB { get => aabb; }
 
-    BroadPhase broadPhase = new Quadtree();
+    BroadPhase broadPhase;
+    BroadPhase[] broadPhases = { new NullBroadPhase(), new Quadtree(), new BVH() };
+
     AABB aabb;
     Vector2 size;
     float fixedDeltaTime { get { return 1.0f / fixedFPS; } }
@@ -44,6 +48,8 @@ public class World : MonoBehaviour
     {
         Timer.Update();
         fpsText.value = "FPS: " + Timer.fps.ToString("F1") + " : " + (Timer.dt * 1000.0f).ToString("F1") + " ms";
+
+        broadPhase = broadPhases[broadPhaseType.index];
 
         springs.ForEach(spring => spring.Draw());
         if (!simulate) return;
@@ -65,17 +71,26 @@ public class World : MonoBehaviour
                 bodies.ForEach(body => body.shape.color = Color.white);
                 broadPhase.Build(aabb, bodies);
 
-                Collision.CreateContacts(bodies, out List<Contact> contacts);
+                Collision.CreateBroadPhaseContacts(broadPhase, bodies, out List<Contact> contacts);
+                Collision.CreateNarrowPhaseContacts(ref contacts);
                 contacts.ForEach(contact => Collision.UpdateContactInfo(ref contact));
+                                
                 ContactSolver.Resolve(contacts);
 
-                contacts.ForEach(contact => { contact.bodyA.shape.color = Color.red; contact.bodyB.shape.color = Color.red; });
+                if (collisionDebug)
+                {
+                    contacts.ForEach(contact => { contact.bodyA.shape.color = Color.red; contact.bodyB.shape.color = Color.red; });
+                }
 			}
 
             timeAccumulator = timeAccumulator - fixedDeltaTime;
 		}
 
-        broadPhase.Draw();
+        if (collisionDebug)
+		{
+            broadPhase.Draw();
+		}
+        collisionText.value = "BODIES: " + bodies.Count + " BP: " + BroadPhase.potentialCollisionCount.ToString();
 
         if (wrap)
 		{

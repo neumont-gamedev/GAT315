@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1da2bafbb44fbf4782109a7f0c0c3ea, type: 3}
-  m_Name: BroadPhaseType
+  m_Script: {fileID: 11500000, guid: 79244ce435590ab43b05afaf72638762, type: 3}
+  m_Name: CollisionDebug
   m_EditorClassIdentifier: 
   value: 0

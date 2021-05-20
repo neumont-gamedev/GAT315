@@ -2,21 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Quadtree : BroadPhase
+public class NullBroadPhase : BroadPhase
 {
-	public int capacity { get; set; } = 4;
-	QuadtreeNode rootNode;
+	public List<Body> bodies { get; set; } = new List<Body>();
 
 	public override void Build(AABB aabb, List<Body> bodies)
 	{
 		potentialCollisionCount = 0;
-		rootNode = new QuadtreeNode(aabb, capacity);
-		bodies.ForEach(body => rootNode.Insert(body));
+		this.bodies.Clear();
+		this.bodies.AddRange(bodies);
 	}
 
 	public override void Query(AABB aabb, List<Body> bodies)
 	{
-		rootNode.Query(aabb, bodies);
+		bodies.AddRange(this.bodies);
 		potentialCollisionCount = potentialCollisionCount + bodies.Count;
 	}
 
@@ -27,6 +26,6 @@ public class Quadtree : BroadPhase
 
 	public override void Draw()
 	{
-		rootNode?.Draw();
+		//
 	}
 }

@@ -9,8 +9,8 @@ public class BroadPhaseTypeData : EnumData
 	public enum eType
 	{
 		None,
-		Quadtree,
-		BVH,
+		QuadTree,
+		BVH
 	}
 
 	public eType value;

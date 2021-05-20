@@ -14,7 +14,7 @@ public static class Collision
 		return circleA.Contains(circleB);
 	}
 
-	public static void CreateContacts(List<Body> bodies, out List<Contact> contacts)
+/*	public static void CreateContacts(List<Body> bodies, out List<Contact> contacts)
 	{
 		contacts = new List<Contact>();
 
@@ -32,7 +32,7 @@ public static class Collision
 				}
 			}
 		}
-	}
+	}*/
 
 	public static void CreateBroadPhaseContacts(BroadPhase broadPhase, List<Body> bodies, out List<Contact> contacts)
 	{
