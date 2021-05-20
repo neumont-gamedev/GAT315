@@ -12,12 +12,10 @@ public class ForceCreator : Action
     public override eActionType actionType => eActionType.Force;
 
     bool action { get; set; } = false;
-	bool oneTime { get; set; } = false;
 
 	public override void StartAction()
 	{
         action = true;
-        oneTime = true;
     }
 
 	public override void StopAction()
@@ -27,9 +25,9 @@ public class ForceCreator : Action
 
 	void Update()
     {
-        if (action && (oneTime || Input.GetKey(KeyCode.LeftControl)))
+        if (action)
         {
-            oneTime = false;
+            action = false;
             Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             GameObject gameObject = Instantiate(original, position, Quaternion.identity);
