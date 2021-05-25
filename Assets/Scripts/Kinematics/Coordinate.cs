@@ -26,6 +26,4 @@ public static class Coordinate
 
 		return polar;
 	}
-
-
 }

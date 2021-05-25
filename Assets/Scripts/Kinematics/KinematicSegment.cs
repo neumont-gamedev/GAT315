@@ -12,7 +12,7 @@ public abstract class KinematicSegment : MonoBehaviour
 	public float angle { get => polar.angle; set => polar.angle = value; }
 	public float size { get; set; }
 
-	Coordinate.Polar polar;
+	protected Coordinate.Polar polar;
 
 	public abstract void Initialize(KinematicSegment parent, Vector2 position, float angle, float length, float width);
 }
