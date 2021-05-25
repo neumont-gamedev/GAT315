@@ -15,7 +15,6 @@ public static class Coordinate
 		Vector2 v2 = Vector2.zero;
 		v2.x = Mathf.Cos(polar.angle * Mathf.Deg2Rad) * polar.length;
 		v2.y = Mathf.Sin(polar.angle * Mathf.Deg2Rad) * polar.length;
-
 		return v2;
 	}
 
