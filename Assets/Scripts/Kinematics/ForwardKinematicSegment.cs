@@ -36,8 +36,7 @@ public class ForwardKinematicSegment : KinematicSegment
         this.parent = parent;
         this.size = size;
 
-        this.angle = angle;
-        this.length = length;
+        this.polar = new Coordinate.Polar { angle = angle, length = length };
 
         start = position;
         baseAngle = angle;

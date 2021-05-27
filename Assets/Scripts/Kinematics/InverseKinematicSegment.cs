@@ -15,19 +15,16 @@ public class InverseKinematicSegment : KinematicSegment
         this.parent = parent;
         this.size = size;
 
-        this.angle = angle;
-        this.length = length;
-
+        polar = new Coordinate.Polar{ angle = angle, length = length };
         start = position;
     }
 
     public void Follow(Vector2 target)
     {
-        Vector2 direction = target - start;
-        Coordinate.Polar polar = Coordinate.CartesianToPolar(direction);
-        this.angle = polar.angle;
+        Vector2 direction = (target - start).normalized * length;
 
-        start = target - (direction.normalized * length);
+        polar = Coordinate.CartesianToPolar(direction);
+        start = target - direction;
     }
 
 }
