@@ -5,123 +5,104 @@ using UnityEngine;
 public class Water : MonoBehaviour
 {
 	[HeaderAttribute("Water")]
-	[SerializeField] [Range(0.0f, 1.0f)] float m_damping = 0.04f;
-	[SerializeField] [Range(1.0f, 90.0f)] float m_simulationFPS = 60.0f;
+	[Range(0.0f, 1.0f)] public float damping = 0.04f;
+	[Range(1.0f, 90.0f)] public float fps = 60.0f;
 
 	[HeaderAttribute("Mesh")]
-	[SerializeField] MeshFilter m_meshFilter = null;
-	[SerializeField] MeshCollider m_meshCollider = null;
-	[SerializeField] [Range(2, 80)] int m_xMeshVertexNum = 2;
-	[SerializeField] [Range(2, 80)] int m_zMeshVertexNum = 2;
-	[SerializeField] [Range(1.0f, 80.0f)] float m_xMeshSize = 40.0f;
-	[SerializeField] [Range(1.0f, 80.0f)] float m_zMeshSize = 40.0f;
+	[Range(2, 80)] public int xMeshVertexNum = 2;
+	[Range(2, 80)] public int zMeshVertexNum = 2;
+	[Range(1.0f, 80.0f)] public float xMeshSize = 40.0f;
+	[Range(1.0f, 80.0f)] public float zMeshSize = 40.0f;
+	public MeshFilter meshFilter = null;
+	public MeshCollider meshCollider = null;
 
-	Mesh m_mesh = null;
-	Vector3[] m_vertices;
+	Mesh mesh = null;
+	Vector3[] vertices;
 
-	float m_simulationTime = 0.0f;
+	float time = 0.0f;
 	int frame = 0;
 
-	float[,] m_buffer1;
-	float[,] m_buffer2;
+	float[,] buffer1;
+	float[,] buffer2;
 
-	ref float[,] GetPrevious()
-	{
-		return ref (((frame % 2) == 0) ? ref m_buffer1 : ref m_buffer2);
-	}
+	float timeStep { get => 1.0f / fps; }
 
-	ref float[,] GetCurrent()
-	{
-		return ref (((frame % 2) == 0) ? ref m_buffer2 : ref m_buffer1);
-	}
+	ref float[,] previous { get => ref (((frame % 2) == 0) ? ref buffer1 : ref buffer2); }
+	ref float[,] current { get => ref (((frame % 2) == 0) ? ref buffer2 : ref buffer1); }
 
 	void Start()
 	{
-		m_mesh = m_meshFilter.mesh;
-		MeshGenerator.Plane(m_meshFilter, m_xMeshSize, m_zMeshSize, m_xMeshVertexNum, m_zMeshVertexNum);
-		m_vertices = m_mesh.vertices;
+		mesh = meshFilter.mesh;
+		MeshGenerator.Plane(meshFilter, xMeshSize, zMeshSize, xMeshVertexNum, zMeshVertexNum);
+		vertices = mesh.vertices;
 
-		m_buffer1 = new float[m_xMeshVertexNum, m_zMeshVertexNum];
-		m_buffer2 = new float[m_xMeshVertexNum, m_zMeshVertexNum];
+		buffer1 = new float[xMeshVertexNum, zMeshVertexNum];
+		buffer2 = new float[xMeshVertexNum, zMeshVertexNum];
 	}
 
 	void Update()
 	{
-		m_simulationTime = m_simulationTime + Time.deltaTime;
-
-		// update simulation
-		while (m_simulationTime > (1.0f / m_simulationFPS))
+		time = time + Time.deltaTime;
+		while (time > timeStep)
 		{
-			float[,] previous = GetPrevious();
-			float[,] current = GetCurrent();
-
-			UpdateSimulation(ref previous, ref current);
+			UpdateSimulation(ref previous, ref current, timeStep);
 			frame++;
 
-			m_simulationTime = m_simulationTime - (1.0f / m_simulationFPS);
+			time = time - timeStep;
 		}
 
 		// set vertices height from current buffer
-		for (int x = 0; x < m_xMeshVertexNum; x++)
+		for (int x = 0; x < xMeshVertexNum; x++)
 		{
-			for (int z = 0; z < m_zMeshVertexNum; z++)
+			for (int z = 0; z < zMeshVertexNum; z++)
 			{
-				float[,] current = GetCurrent();
-				m_vertices[x + (z * m_xMeshVertexNum)].y = current[x, z];
+				vertices[x + (z * xMeshVertexNum)].y = current[x, z];
 			}
 		}
 
 		// recalculate mesh with new vertices
-		m_mesh.vertices = m_vertices;
-		m_mesh.RecalculateNormals();
-		m_mesh.RecalculateTangents();
-		m_mesh.RecalculateBounds();
-		m_meshCollider.sharedMesh = m_mesh;
+		mesh.vertices = vertices;
+		mesh.RecalculateNormals();
+		mesh.RecalculateTangents();
+		mesh.RecalculateBounds();
+		meshCollider.sharedMesh = mesh;
 	}
 
-	void UpdateSimulation(ref float[,] previous, ref float[,] current)
+	void UpdateSimulation(ref float[,] previous, ref float[,] current, float dt)
 	{
-		for (int x = 1; x < m_xMeshVertexNum-1; x++)
+		for (int x = 1; x < xMeshVertexNum-1; x++)
 		{
-			for (int z = 1; z < m_zMeshVertexNum-1; z++)
+			for (int z = 1; z < zMeshVertexNum-1; z++)
 			{
 				float value = previous[x, z + 1] +
 							  previous[x, z - 1] +
 							  previous[x - 1, z] +
-							  previous[x + 1, z] +
-							  previous[x + 1, z + 1] +
-							  previous[x - 1, z + 1] +
-							  previous[x + 1, z - 1] +
-							  previous[x - 1, z - 1];
+							  previous[x + 1, z];
 
-				value = value / 4.0f;
+				value = value / 2;
 				value = value - current[x, z];
-				value = value * Mathf.Pow(m_damping, Time.deltaTime);
+				value = value * Mathf.Pow(damping, dt);
 				current[x, z] = value;
 			}
 		}
 	}
 
-	public void Touch(Ray ray, float strength, bool apply)
+	public void Touch(Ray ray, float strength)
 	{
 		RaycastHit raycastHit;
 		if (Physics.Raycast(ray, out raycastHit))
 		{
 			MeshCollider meshCollider = raycastHit.collider as MeshCollider;
-			if (meshCollider == m_meshCollider)
+			if (meshCollider == this.meshCollider)
 			{
-				int[] triangles = m_mesh.triangles;
-				if (apply)
-				{
-					int index = triangles[raycastHit.triangleIndex * 3 + 0];
-					int x = index % m_xMeshVertexNum;
-					int z = index / m_xMeshVertexNum;
+				int[] triangles = mesh.triangles;
+				int index = triangles[raycastHit.triangleIndex * 3];
+				int x = index % xMeshVertexNum;
+				int z = index / xMeshVertexNum;
 
-					if (x > 1 && x < m_xMeshVertexNum - 1 && z > 1 && z < m_zMeshVertexNum - 1)
-					{
-						float[,] current = GetCurrent();
-						current[x, z] = strength;
-					}
+				if (x > 1 && x < xMeshVertexNum - 1 && z > 1 && z < zMeshVertexNum - 1)
+				{
+					current[x, z] = strength;
 				}
 			}
 		}
