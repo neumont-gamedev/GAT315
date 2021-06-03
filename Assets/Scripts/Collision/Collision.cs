@@ -14,26 +14,6 @@ public static class Collision
 		return circleA.Contains(circleB);
 	}
 
-/*	public static void CreateContacts(List<Body> bodies, out List<Contact> contacts)
-	{
-		contacts = new List<Contact>();
-
-		for (int i = 0; i < bodies.Count - 1; i++)
-		{
-			for (int j = i + 1; j < bodies.Count; j++)
-			{
-				Body bodyA = bodies[i];
-				Body bodyB = bodies[j];
-
-				if (TestOverlap(bodyA, bodyB))
-				{
-					Contact contact = new Contact() { bodyA = bodyA, bodyB = bodyB };
-					contacts.Add(contact);
-				}
-			}
-		}
-	}*/
-
 	public static void CreateBroadPhaseContacts(BroadPhase broadPhase, List<Body> bodies, out List<Contact> contacts)
 	{
 		contacts = new List<Contact>();
