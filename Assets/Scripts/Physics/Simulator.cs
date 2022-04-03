@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Simulator : Singleton<Simulator>
 {
+	public Vector2 gravity = new Vector2(0, -9.8f);
 	public List<Body> bodies = new List<Body>();
 	Camera activeCamera;
 
@@ -14,15 +15,19 @@ public class Simulator : Singleton<Simulator>
 
 	private void Update()
 	{
-		foreach(var body in bodies)
+		bodies.ForEach(body =>
 		{
-			Integrator.ExplicitEuler(body, Time.deltaTime);
-		}
+			body.Step(Time.deltaTime);
+			Integrator.SemiImplicitEuler(body, Time.deltaTime);
+		});
+
+		bodies.ForEach(body => body.force = Vector2.zero);
+
 	}
 
 	public Vector3 GetScreenToWorldPosition(Vector2 screen)
 	{
-		Vector3 world = activeCamera.ScreenToWorldPoint(screen);
-		return new Vector3(world.x, world.y, 0);
+		Vector2 world = activeCamera.ScreenToWorldPoint(screen);
+		return world;
 	}
 }
