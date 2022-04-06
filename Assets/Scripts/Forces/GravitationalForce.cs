@@ -8,21 +8,21 @@ public class GravitationalForce : Force
 
 	public override void ApplyForce(List<Body> bodies)
 	{
+		for (int i = 0; i < bodies.Count; i++)
 		{
-			for (int i = 0; i < bodies.Count - 1; i++)
+			for (int j = 0; j < bodies.Count; j++)
 			{
-				for (int j = i + 1; j < bodies.Count; j++)
-				{
-					Body bodyA = bodies[i];
-					Body bodyB = bodies[j];
+				if (i == j) continue;
 
-					Vector2 direction = bodyA.position - bodyB.position;
-					float distanceSqr = Mathf.Max(direction.sqrMagnitude, 1);
-					float force = gravitation.value * ((bodyA.mass * bodyB.mass) / distanceSqr);
+				Body bodyA = bodies[i];
+				Body bodyB = bodies[j];
 
-					bodyA.ApplyForce(-direction.normalized * force, Body.eForceMode.Force);
-					bodyB.ApplyForce( direction.normalized * force, Body.eForceMode.Force);
-				}
+				Vector2 direction = bodyA.position - bodyB.position;
+				float distance = Mathf.Max(1, direction.magnitude);
+				float force = gravitation.value * (bodyA.mass * bodyB.mass) / distance;
+
+				bodyA.ApplyForce(-direction.normalized * force, Body.eForceMode.Force);
+				bodyB.ApplyForce( direction.normalized * force, Body.eForceMode.Force);
 			}
 		}
 	}
