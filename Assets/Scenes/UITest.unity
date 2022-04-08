@@ -774,6 +774,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6026909756c7f947bd397afdf4d1812, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fixedFPS: {fileID: 11400000, guid: 8a2678d372508834e82445f7fd2b34c8, type: 2}
+  fps: {fileID: 11400000, guid: 0df186132363e7146ae297a5413e2035, type: 2}
   forces:
   - {fileID: 549004043}
   - {fileID: 549004044}
