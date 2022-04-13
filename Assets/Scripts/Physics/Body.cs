@@ -17,8 +17,11 @@ public class Body : MonoBehaviour
 		Kinematic,
 		Dynamic
 	}
-
+	
+	[Tooltip("The shape for this body")]
 	public Shape shape;
+
+	public List<Spring> springs { get; set; } = new List<Spring>();
 
 	public eBodyType bodyType { get; set; } = eBodyType.Dynamic;
     public Vector2 position { get => transform.position; set => transform.position = value; }
