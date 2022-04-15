@@ -34,6 +34,15 @@ public class Simulator : Singleton<Simulator>
 		// integrate physics simulation with fixed delta time
 		while (timeAccumulator >= fixedDeltaTime)
 		{
+			bodies.ForEach(body => body.shape.color = Color.white);
+			Collision.CreateContacts(bodies, out var contacts);
+			contacts.ForEach(contact => 
+			{ 
+				contact.bodyA.shape.color = Color.red; 
+				contact.bodyB.shape.color = Color.red; 
+			});
+
+
 			bodies.ForEach(body =>
 			{
 				Integrator.SemiImplicitEuler(body, fixedDeltaTime);
