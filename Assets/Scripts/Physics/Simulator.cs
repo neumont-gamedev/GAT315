@@ -41,7 +41,7 @@ public class Simulator : Singleton<Simulator>
 				contact.bodyA.shape.color = Color.red; 
 				contact.bodyB.shape.color = Color.red; 
 			});
-
+			Collision.SeparateContacts(contacts);
 
 			bodies.ForEach(body =>
 			{
