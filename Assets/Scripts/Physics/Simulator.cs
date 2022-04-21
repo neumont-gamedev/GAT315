@@ -42,6 +42,7 @@ public class Simulator : Singleton<Simulator>
 				contact.bodyB.shape.color = Color.red; 
 			});
 			Collision.SeparateContacts(contacts);
+			Collision.ApplyImpulses(contacts);
 
 			bodies.ForEach(body =>
 			{
