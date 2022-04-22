@@ -18,7 +18,6 @@ public class Body : MonoBehaviour
 		Dynamic
 	}
 	
-	[Tooltip("The shape for this body")]
 	public Shape shape;
 
 	public List<Spring> springs { get; set; } = new List<Spring>();
@@ -53,10 +52,5 @@ public class Body : MonoBehaviour
 				break;
 		}
 		
-	}
-
-    public void Step(float dt)
-	{
-        //acceleration = Simulator.Instance.gravity + (force * inverseMass);
 	}
 }

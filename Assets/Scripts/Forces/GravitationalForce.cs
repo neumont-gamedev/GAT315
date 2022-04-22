@@ -10,10 +10,8 @@ public class GravitationalForce : Force
 	{
 		for (int i = 0; i < bodies.Count; i++)
 		{
-			for (int j = 0; j < bodies.Count; j++)
+			for (int j = i + 1; j < bodies.Count; j++)
 			{
-				if (i == j) continue;
-
 				Body bodyA = bodies[i];
 				Body bodyB = bodies[j];
 

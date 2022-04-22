@@ -30,6 +30,11 @@ public class Collision
 		return Circle.Intersects(new Circle(bodyA), new Circle(bodyB));
 	}
 
+	public static bool TestOverlap(Shape shapeA, Vector2 positionA, Shape shapeB, Vector2 positionB)
+	{
+		return Circle.Intersects(new Circle(positionA, ((CircleShape)shapeA).radius), new Circle(positionB, ((CircleShape)shapeB).radius));
+	}
+
 	public static Contact GenerateContact(Body bodyA, Body bodyB)
 	{
 		Contact contact = new Contact();
