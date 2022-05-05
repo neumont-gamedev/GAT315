@@ -32,9 +32,38 @@ public class QuadtreeNode
 		}
 		else
 		{
-			// subdivide
-		}
+			// subdivide children if not subdivided
+			if (!subdivided) Subdivide();
 
+			// insert body into the newly subdivided nodes
+			northeast.Insert(body);
+			northwest.Insert(body);
+			southeast.Insert(body);
+			southwest.Insert(body);
+		}
+	}
+
+	private void Subdivide()
+	{
+		float xo = nodeAABB.extents.x * 0.5f;
+		float yo = nodeAABB.extents.y * 0.5f;
+
+		northeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity);
+		northwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity);
+		southeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity);
+		southwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity);
+
+		subdivided = true;
+	}
+
+	public void Draw()
+	{
+		nodeAABB.Draw(Color.green);
+
+		northeast?.Draw();
+		northwest?.Draw();
+		southeast?.Draw();
+		southwest?.Draw();
 	}
 
 
