@@ -40,7 +40,6 @@ public class Simulator : Singleton<Simulator>
 		{
 			// construct broad-phase tree
 			broadPhase.Build(new AABB(Vector2.zero, GetScreenSize()), bodies);
-			broadPhase.Draw();
 
 			//bodies.ForEach(body => body.shape.color = Color.white);
 			Collision.CreateContacts(bodies, out var contacts);
@@ -56,10 +55,12 @@ public class Simulator : Singleton<Simulator>
 			{
 				Integrator.SemiImplicitEuler(body, fixedDeltaTime);
 				body.position = body.position.Wrap(-GetScreenSize() * 0.5f, GetScreenSize() * 0.5f);
-				body.shape.GetAABB(body.position).Draw(Color.white);
+				//body.shape.GetAABB(body.position).Draw(Color.white);
 			});
 			timeAccumulator -= fixedDeltaTime;
 		}
+
+		broadPhase.Draw();
 
 		// reset body acceleration
 		bodies.ForEach(body => body.acceleration = Vector2.zero);

@@ -10,7 +10,7 @@ public class Quadtree : BroadPhase
 	public override void Build(AABB aabb, List<Body> bodies)
 	{
 		// create quadtree root node
-		rootNode = new QuadtreeNode(aabb, capacity);
+		rootNode = new QuadtreeNode(aabb, capacity, 0);
 		// insert bodies starting at root node
 		bodies.ForEach(body => rootNode.Insert(body));
 	}
@@ -22,7 +22,7 @@ public class Quadtree : BroadPhase
 
 	public override void Query(Body body, List<Body> results)
 	{
-		//
+		Query(body.shape.GetAABB(body.position), results);
 	}
 
 	public override void Draw()

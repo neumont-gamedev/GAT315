@@ -6,6 +6,7 @@ public class QuadtreeNode
 {
 	AABB nodeAABB;
 	int nodeCapacity;
+	int nodeLevel;
 	List<Body> nodeBodies = new List<Body>();
 
 	QuadtreeNode northeast; // = null
@@ -14,10 +15,11 @@ public class QuadtreeNode
 	QuadtreeNode southwest;
 	bool subdivided = false;
 
-	public QuadtreeNode(AABB aabb, int capacity)
+	public QuadtreeNode(AABB aabb, int capacity, int level)
 	{
 		nodeAABB = aabb;
 		nodeCapacity = capacity;
+		nodeLevel = level;
 	}
 
 	public void Insert(Body body)
@@ -48,17 +50,20 @@ public class QuadtreeNode
 		float xo = nodeAABB.extents.x * 0.5f;
 		float yo = nodeAABB.extents.y * 0.5f;
 
-		northeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity);
-		northwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity);
-		southeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity);
-		southwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity);
+		northeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity, nodeLevel + 1);
+		northwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y + yo), nodeAABB.extents), nodeCapacity, nodeLevel + 1);
+		southeast = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x - xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity, nodeLevel + 1);
+		southwest = new QuadtreeNode(new AABB(new Vector2(nodeAABB.center.x + xo, nodeAABB.center.y - yo), nodeAABB.extents), nodeCapacity, nodeLevel + 1);
 
 		subdivided = true;
 	}
 
 	public void Draw()
 	{
-		nodeAABB.Draw(Color.green);
+		Color color = BroadPhase.colors[nodeLevel % BroadPhase.colors.Length];
+
+		nodeAABB.Draw(color);
+		nodeBodies.ForEach(body => Debug.DrawLine(nodeAABB.center, body.position, color));
 
 		northeast?.Draw();
 		northwest?.Draw();

@@ -18,7 +18,8 @@ public class Collision
 				{
 					if (TestOverlap(bodyA, bodyB))
 					{
-						contacts.Add(GenerateContact(bodyA, bodyB));
+						Contact contact = new Contact() { bodyA = bodyA, bodyB = bodyB };
+						contacts.Add(GenerateContactInfo(contact));
 					}
 				}
 			}
@@ -35,24 +36,16 @@ public class Collision
 		return Circle.Intersects(new Circle(positionA, ((CircleShape)shapeA).radius), new Circle(positionB, ((CircleShape)shapeB).radius));
 	}
 
-	public static Contact GenerateContact(Body bodyA, Body bodyB)
+	public static Contact GenerateContactInfo(Contact contact)
 	{
-		Contact contact = new Contact();
-
-		contact.bodyA = bodyA;
-		contact.bodyB = bodyB;
-
 		// compute depth
-		Vector2 direction = bodyA.position - bodyB.position;
+		Vector2 direction = contact.bodyA.position - contact.bodyB.position;
 		float distance = direction.magnitude;
-		float radius = ((CircleShape)bodyA.shape).radius + ((CircleShape)bodyB.shape).radius;
+		float radius = ((CircleShape)contact.bodyA.shape).radius + ((CircleShape)contact.bodyB.shape).radius;
 		contact.depth = radius - distance;
 
 		// compute normal
 		contact.normal = direction.normalized;
-
-		//Vector2 position = bodyB.position + (((CircleShape)bodyB.shape).radius * contact.normal);
-		//Debug.DrawRay(position, contact.normal);
 
 		return contact;
 	}
