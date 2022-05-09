@@ -14,7 +14,7 @@ public class Contact
 	{
 		public bool Equals(Contact contactA, Contact contactB)
 		{
-			// Two items are equal if their keys are equal.
+			// Two items are equal if bodies are the same.
 			return ((contactA.bodyA == contactB.bodyA && contactA.bodyB == contactB.bodyB) ||
 				(contactA.bodyA == contactB.bodyB && contactA.bodyB == contactB.bodyA));
 		}
