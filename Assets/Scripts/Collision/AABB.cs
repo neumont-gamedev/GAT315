@@ -17,6 +17,12 @@ public struct AABB
 		this.size = size;
 	}
 
+	public void Set(Vector2 center, Vector2 size)
+	{
+		this.center = center;
+		this.size = size;
+	}
+
 	public bool Contains(Vector2 point)
 	{
 		return point.x >= min.x && point.x <= max.x &&

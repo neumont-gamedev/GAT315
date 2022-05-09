@@ -17,7 +17,7 @@ public class Quadtree : BroadPhase
 
 	public override void Query(AABB aabb, List<Body> results)
 	{
-		//
+		rootNode.Query(aabb, results);
 	}
 
 	public override void Query(Body body, List<Body> results)

@@ -26,6 +26,7 @@ public class QuadtreeNode
 	{
 		// check if with node AABB
 		if (!nodeAABB.Contains(body.shape.GetAABB(body.position))) return;
+		//if (!nodeAABB.Contains(body.position)) return;
 
 		// check if within capacity
 		if (nodeBodies.Count < nodeCapacity)
@@ -42,6 +43,24 @@ public class QuadtreeNode
 			northwest.Insert(body);
 			southeast.Insert(body);
 			southwest.Insert(body);
+		}
+	}
+
+	public void Query(AABB aabb, List<Body> results)
+	{
+		// check if query aabb intersects node aabb, return if not
+		if (!nodeAABB.Contains(aabb)) return;
+
+		// add intersecting node bodies
+		results.AddRange(nodeBodies);
+
+		// check the children
+		if (subdivided)
+		{
+			northeast.Query(aabb, results);
+			northwest.Query(aabb, results);
+			southeast.Query(aabb, results);
+			southwest.Query(aabb, results);
 		}
 	}
 
