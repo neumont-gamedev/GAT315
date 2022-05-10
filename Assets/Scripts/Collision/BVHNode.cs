@@ -5,14 +5,16 @@ using UnityEngine;
 public class BVHNode
 {
 	AABB nodeAABB;
+	int nodeLevel;
 	List<Body> nodeBodies = new List<Body>();
 
 	BVHNode left;
 	BVHNode right;
 
-	public BVHNode(List<Body> bodies)
+	public BVHNode(List<Body> bodies, int level)
 	{
 		nodeBodies = bodies;
+		nodeLevel = level;
 
 		ComputeBoundary();
 		Split();
@@ -35,8 +37,8 @@ public class BVHNode
 
 		if (half >= 1)
 		{
-			left = new BVHNode(nodeBodies.GetRange(0, half));
-			right = new BVHNode(nodeBodies.GetRange(half, half + length % 2));
+			left = new BVHNode(nodeBodies.GetRange(0, half), nodeLevel + 1);
+			right = new BVHNode(nodeBodies.GetRange(half, half + length % 2), nodeLevel + 1);
 
 			nodeBodies.Clear();
 		}
@@ -50,13 +52,18 @@ public class BVHNode
 		// add intersecting node bodies
 		results.AddRange(nodeBodies);
 
+		// query child nodes
 		left?.Query(aabb, results);
 		right?.Query(aabb, results);
 	}
 
 	public void Draw()
 	{
-		nodeAABB.Draw(Color.white);
+		Color color = BroadPhase.colors[nodeLevel % BroadPhase.colors.Length];
+
+		AABB aabb = nodeAABB;
+		aabb.size -= Vector2.one * (nodeLevel * 0.15f);
+		aabb.Draw(color);
 
 		left?.Draw();
 		right?.Draw();
