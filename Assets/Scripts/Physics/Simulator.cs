@@ -8,12 +8,15 @@ public class Simulator : Singleton<Simulator>
 	[SerializeField] BoolData simulate;
 	[SerializeField] IntData fixedFPS;
 	[SerializeField] StringData fps;
+	[SerializeField] StringData collisionInfo;
+	[SerializeField] EnumData broadPhaseType;
 	[SerializeField] List<Force> forces;
 
 	public List<Body> bodies { get; set; } = new List<Body>();
 	public float fixedDeltaTime => 1.0f / fixedFPS.value;
 
-	BroadPhase broadPhase = new Quadtree();
+	BroadPhase[] broadPhases = { new Quadtree(), new BVH(), new NullBroadPhase() };
+	BroadPhase broadPhase;
 	Camera activeCamera;
 	float timeAccumulator = 0;
 
@@ -37,6 +40,8 @@ public class Simulator : Singleton<Simulator>
 
 		Vector2 screenSize = GetScreenSize();
 
+		broadPhase = broadPhases[broadPhaseType.value];
+
 		// integrate physics simulation with fixed delta time
 		while (timeAccumulator >= fixedDeltaTime)
 		{
@@ -45,8 +50,6 @@ public class Simulator : Singleton<Simulator>
 			var contacts = new List<Contact>();
 			Collision.CreateBroadPhaseContacts(broadPhase, bodies, contacts);
 			Collision.CreateNarrowPhaseContacts(contacts);
-
-			//Collision.CreateContacts(bodies, out var contacts);
 
 			Collision.SeparateContacts(contacts);
 			Collision.ApplyImpulses(contacts);
@@ -60,6 +63,7 @@ public class Simulator : Singleton<Simulator>
 		}
 
 		broadPhase.Draw();
+		collisionInfo.value = broadPhase.queryResultCount + "/" + bodies.Count;
 
 		// reset body acceleration
 		bodies.ForEach(body => body.acceleration = Vector2.zero);

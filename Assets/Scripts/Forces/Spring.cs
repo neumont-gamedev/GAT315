@@ -12,14 +12,22 @@ public class Spring
 
 	public void ApplyForce()
 	{
-		Vector2 direction = bodyA.position - bodyB.position;
-		float length = direction.magnitude;
-		float x = length - restLength;
-		float f = -k * x;
+		Vector2 force = Force(bodyA.position, bodyB.position, restLength, k);
 
-		bodyA.ApplyForce( f * direction.normalized, Body.eForceMode.Force);
-		bodyB.ApplyForce(-f * direction.normalized, Body.eForceMode.Force);
+		bodyA.ApplyForce( force, Body.eForceMode.Acceleration);
+		bodyB.ApplyForce(-force, Body.eForceMode.Acceleration);
 
 		Debug.DrawLine(bodyA.position, bodyB.position);
+	}
+
+	// force to move position towards anchor when length > rest length
+	static public Vector2 Force(Vector2 position, Vector2 anchor, float restLength, float k)
+	{
+		Vector2 direction = position - anchor; // direction = position <-- anchor
+		float length = direction.magnitude;
+		float x = length - restLength; // displacement of spring from resting length
+		float f = -k * x; // force = k (stiffness) * x (displacement)
+
+		return f * direction.normalized;
 	}
 }

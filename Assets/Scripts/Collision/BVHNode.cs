@@ -38,7 +38,7 @@ public class BVHNode
 		if (half >= 1)
 		{
 			left = new BVHNode(nodeBodies.GetRange(0, half), nodeLevel + 1);
-			right = new BVHNode(nodeBodies.GetRange(half, half + length % 2), nodeLevel + 1);
+			right = new BVHNode(nodeBodies.GetRange(half, length - half), nodeLevel + 1);
 
 			nodeBodies.Clear();
 		}
