@@ -81,8 +81,9 @@ public class QuadtreeNode
 	{
 		Color color = BroadPhase.colors[nodeLevel % BroadPhase.colors.Length];
 
-		nodeAABB.Draw(color);
-		nodeBodies.ForEach(body => Debug.DrawLine(nodeAABB.center, body.position, color));
+		AABB aabb = nodeAABB;
+		aabb.size -= Vector2.one * (nodeLevel * 0.15f);
+		aabb.Draw(color);
 
 		northeast?.Draw();
 		northwest?.Draw();
