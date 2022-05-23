@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inputAngle: 0
+  noiseRange: 40
   enableNoise: 1
 --- !u!212 &2550731051018621617
 SpriteRenderer:

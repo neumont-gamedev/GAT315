@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class FKSegment : KinematicSegment
 {
-    [SerializeField][Range(-90, 90)] float inputAngle;
+    [SerializeField] [Range(-90, 90)] float inputAngle;
+    [SerializeField] [Range(0, 90)] float noiseRange = 90;
+    [SerializeField] [Range(0, 2)] float noiseRate = 1;
     [SerializeField] bool enableNoise = false;
 
     float baseAngle;
@@ -20,7 +22,7 @@ public class FKSegment : KinematicSegment
         start = position;
         baseAngle = angle;
 
-        noise = Random.value * 20;
+        noise = Random.value * 100;
     }
 
     private void Update()
@@ -33,9 +35,9 @@ public class FKSegment : KinematicSegment
 
         if (enableNoise)
 		{
-            noise += Time.deltaTime;
+            noise += Time.deltaTime * noiseRate;
             float t = Mathf.PerlinNoise(noise, 0);
-            localAngle = Mathf.Lerp(-90, 90, t);
+            localAngle = Mathf.Lerp(-noiseRange, noiseRange, t);
 		}
 
         // update angle using parent angle
