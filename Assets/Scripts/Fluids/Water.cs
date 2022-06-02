@@ -16,6 +16,8 @@ public class Water : MonoBehaviour
 
 	[SerializeField] [Range(1.0f, 90.0f)] float fps = 30;
 	[SerializeField] [Range(0.0f, 1.0f)] float damping = 0.04f;
+	[SerializeField] bool enableRipple;
+	[SerializeField] bool enableWave;
 
 	[Header("Waves")]
 	[SerializeField] Wave wave1;
@@ -26,7 +28,7 @@ public class Water : MonoBehaviour
 	[SerializeField] [Range(1.0f, 80.0f)] float zMeshSize = 40.0f;
 	[SerializeField] [Range(2, 80)] int xMeshVertexNum = 2;
 	[SerializeField] [Range(2, 80)] int zMeshVertexNum = 2;
-	
+
 	MeshFilter meshFilter;
 	MeshCollider meshCollider;
 
@@ -42,7 +44,7 @@ public class Water : MonoBehaviour
 	float timeStep { get => 1.0f / fps; }
 
 	float[,] previousBuffer { get => ((frame % 2) == 0) ? buffer1 : buffer2; }
-	float[,] currentBuffer  { get => ((frame % 2) == 0) ? buffer2 : buffer1; }
+	float[,] currentBuffer { get => ((frame % 2) == 0) ? buffer2 : buffer1; }
 
 	void Start()
 	{
@@ -61,11 +63,14 @@ public class Water : MonoBehaviour
 	void Update()
 	{
 		time += Time.deltaTime;
-		while (time > timeStep)
+		while (time >= timeStep)
 		{
-			//frame++;
-			//UpdateSimulation(previousBuffer, currentBuffer, timeStep);
-			UpdateWave(currentBuffer);
+			if (enableRipple)
+			{
+				frame++;
+				UpdateRipplen(previousBuffer, currentBuffer, timeStep);
+			}
+			if (enableWave) UpdateWave(currentBuffer);
 
 			time -= timeStep;
 		}
@@ -104,13 +109,23 @@ public class Water : MonoBehaviour
 		}
 	}
 
-	void UpdateSimulation(float[,] previous, float[,] current, float dt)
+	void UpdateRipplen(float[,] previous, float[,] current, float dt)
 	{
-		for (int x = 1; x < xMeshVertexNum-1; x++)
+		for (int x = 1; x < xMeshVertexNum - 1; x++)
 		{
-			for (int z = 1; z < zMeshVertexNum-1; z++)
+			for (int z = 1; z < zMeshVertexNum - 1; z++)
 			{
-				current[x, z] = previous[x, z];
+				// update buffer value
+				float value = previous[x, z + 1] +
+								previous[x, z - 1] +
+								previous[x + 1, z] +
+								previous[x - 1, z];
+
+				value /= 2;
+				value -= current[x, z];
+				value *= Mathf.Pow(damping, dt);
+
+				current[x, z] = value;
 			}
 		}
 	}
